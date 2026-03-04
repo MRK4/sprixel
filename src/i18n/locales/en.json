@@ -1,20 +1,28 @@
 {
   "common": {
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "add": "Add"
   },
-  "toolbar": {
-    "pencil": "Pencil",
-    "eraser": "Eraser"
-  },
-  "layers": {
-    "newLayer": "New layer"
-  },
-  "app": {
-    "countIs": "count is {{count}}",
-    "editPart1": "Edit ",
-    "editPart2": " and save to test HMR",
-    "clickLogos": "Click on the Vite and React logos to learn more",
-    "viteReact": "Vite + React"
+  "editor": {
+    "tools": {
+      "pencil": "Pencil (P)",
+      "eraser": "Eraser (E)",
+      "fill": "Fill (F)",
+      "eyedropper": "Eyedropper (I)",
+      "select": "Select (S)",
+      "move": "Move (M)",
+      "line": "Line (L)",
+      "rect": "Rectangle (R)"
+    },
+    "layers": {
+      "title": "Layers",
+      "add": "Add layer",
+      "delete": "Delete layer",
+      "opacity": "Opacity",
+      "visible": "Visible",
+      "locked": "Locked"
+    }
   }
 }

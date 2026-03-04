@@ -96,7 +96,6 @@ Each layer is rendered independently to ensure performance and flexibility.
 - TypeScript
 - Vite + SWC
 - i18next + react-i18next (internationalization, no locale in URL)
-- [pixelarticons](https://github.com/halfmage/pixelarticons) — 800 handcrafted pixel art icons (24×24, no anti-aliasing)
 - Native Canvas 2D (pixel-perfect rendering)
 - Zustand for state management
 - TailwindCSS
@@ -149,6 +148,13 @@ Pixel Editor targets:
 - Hobbyists looking for a quick tool without installation
 
 The project favors simplicity, performance and precision over multiplying secondary features.
+
+---
+
+## Credits
+
+- DGC-01 — pixel display font
+- [pixelarticons](https://github.com/halfmage/pixelarticons) — 800 handcrafted pixel art icons (24×24, no anti-aliasing)
 
 ---
 

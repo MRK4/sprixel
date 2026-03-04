@@ -9,17 +9,14 @@ export function LanguageSwitcher() {
   const { i18n } = useTranslation()
 
   return (
-    <div style={{ position: 'absolute', top: 16, right: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
-      <span style={{ fontSize: 12, opacity: 0.7 }} title="Version">v{__APP_VERSION__}</span>
+    <div className="absolute top-4 right-4 flex items-center gap-3">
+      <span className="text-xs opacity-70" title="Version">v{__APP_VERSION__}</span>
       {LANGUAGES.map(({ code, label }) => (
         <button
           key={code}
           type="button"
           onClick={() => i18n.changeLanguage(code)}
-          style={{
-            padding: '4px 8px',
-            fontWeight: i18n.language.startsWith(code) ? 'bold' : 'normal',
-          }}
+          className={`px-2 py-1 ${i18n.language.startsWith(code) ? 'font-bold' : 'font-normal'}`}
         >
           {label}
         </button>

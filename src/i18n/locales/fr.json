@@ -1,20 +1,28 @@
 {
   "common": {
     "save": "Enregistrer",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "add": "Ajouter"
   },
-  "toolbar": {
-    "pencil": "Crayon",
-    "eraser": "Gomme"
-  },
-  "layers": {
-    "newLayer": "Nouveau calque"
-  },
-  "app": {
-    "countIs": "le compteur est à {{count}}",
-    "editPart1": "Modifiez ",
-    "editPart2": " et enregistrez pour tester le HMR",
-    "clickLogos": "Cliquez sur les logos Vite et React pour en savoir plus",
-    "viteReact": "Vite + React"
+  "editor": {
+    "tools": {
+      "pencil": "Crayon (P)",
+      "eraser": "Gomme (E)",
+      "fill": "Remplissage (F)",
+      "eyedropper": "Pipette (I)",
+      "select": "Sélection (S)",
+      "move": "Déplacement (M)",
+      "line": "Ligne (L)",
+      "rect": "Rectangle (R)"
+    },
+    "layers": {
+      "title": "Calques",
+      "add": "Ajouter un calque",
+      "delete": "Supprimer le calque",
+      "opacity": "Opacité",
+      "visible": "Visible",
+      "locked": "Verrouillé"
+    }
   }
 }

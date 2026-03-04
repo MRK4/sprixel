@@ -10,7 +10,7 @@
 
 ## Incremental features (v1.1.x, v1.2.x)
 
-- Palette
+- Palette (Creation, export and import from lospec)
 - Optimized undo
 - Improved UI
 - GIF export
