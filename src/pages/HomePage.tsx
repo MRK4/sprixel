@@ -136,6 +136,7 @@ export function HomePage() {
             activeColor={activeColor}
             brushSize={toolOptions.brushSize}
             pencilOpacity={toolOptions.pencilOpacity}
+            fillTolerance={toolOptions.fillTolerance}
             viewportRef={viewportRef}
           />
         </div>
