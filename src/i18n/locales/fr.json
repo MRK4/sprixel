@@ -1,0 +1,20 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler"
+  },
+  "toolbar": {
+    "pencil": "Crayon",
+    "eraser": "Gomme"
+  },
+  "layers": {
+    "newLayer": "Nouveau calque"
+  },
+  "app": {
+    "countIs": "le compteur est à {{count}}",
+    "editPart1": "Modifiez ",
+    "editPart2": " et enregistrez pour tester le HMR",
+    "clickLogos": "Cliquez sur les logos Vite et React pour en savoir plus",
+    "viteReact": "Vite + React"
+  }
+}

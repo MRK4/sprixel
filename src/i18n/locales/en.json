@@ -1,0 +1,20 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "toolbar": {
+    "pencil": "Pencil",
+    "eraser": "Eraser"
+  },
+  "layers": {
+    "newLayer": "New layer"
+  },
+  "app": {
+    "countIs": "count is {{count}}",
+    "editPart1": "Edit ",
+    "editPart2": " and save to test HMR",
+    "clickLogos": "Click on the Vite and React logos to learn more",
+    "viteReact": "Vite + React"
+  }
+}
