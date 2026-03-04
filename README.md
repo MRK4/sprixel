@@ -98,11 +98,17 @@ Each layer is rendered independently to ensure performance and flexibility.
 - i18next + react-i18next (internationalization, no locale in URL)
 - Native Canvas 2D (pixel-perfect rendering)
 - Zustand for state management
+- IndexedDB (creations + user preferences)
 - TailwindCSS
 - In-house UI components with variant system
 
 No backend dependency.  
 All processing is done client-side.
+
+IndexedDB is used for local storage:
+
+- **Creations**: user projects and artworks
+- **Preferences**: custom palettes, language, and other settings
 
 ---
 

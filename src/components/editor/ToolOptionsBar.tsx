@@ -5,6 +5,7 @@ import type { Tool } from './types'
 
 export interface ToolOptions {
   brushSize: number
+  pencilOpacity: number
   pixelPerfect: boolean
   fillTolerance: number
 }
@@ -88,14 +89,16 @@ export function ToolOptionsBar({ activeTool, options, onOptionsChange }: ToolOpt
   const { t } = useTranslation()
 
   const toolsWithBrushSize: Tool[] = ['pencil', 'eraser']
+  const toolsWithPencilOpacity: Tool[] = ['pencil']
   const toolsWithPixelPerfect: Tool[] = ['line', 'rect', 'ellipse']
   const toolsWithFillTolerance: Tool[] = ['fill']
 
   const showBrushSize = toolsWithBrushSize.includes(activeTool)
+  const showPencilOpacity = toolsWithPencilOpacity.includes(activeTool)
   const showPixelPerfect = toolsWithPixelPerfect.includes(activeTool)
   const showFillTolerance = toolsWithFillTolerance.includes(activeTool)
 
-  const hasOptions = showBrushSize || showPixelPerfect || showFillTolerance
+  const hasOptions = showBrushSize || showPencilOpacity || showPixelPerfect || showFillTolerance
 
   if (!hasOptions) return null
 
@@ -110,6 +113,29 @@ export function ToolOptionsBar({ activeTool, options, onOptionsChange }: ToolOpt
             value={options.brushSize}
             onChange={(v) => onOptionsChange({ brushSize: v })}
           />
+        </>
+      )}
+
+      {showPencilOpacity && (
+        <>
+          {(showBrushSize) && <Separator orientation="vertical" />}
+          <span className="text-xs text-(--color-muted) shrink-0">
+            {t('editor.toolOptions.opacity')}:
+          </span>
+          <div className="flex items-center gap-2 min-w-0 flex-1 max-w-32">
+            <input
+              type="range"
+              min={1}
+              max={100}
+              step={1}
+              value={options.pencilOpacity}
+              onChange={(e) => onOptionsChange({ pencilOpacity: Math.round(e.target.valueAsNumber) })}
+              className="flex-1 h-2 min-w-0 appearance-none cursor-pointer bg-(--color-border) [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-(--color-accent) [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:border-none [&::-moz-range-thumb]:bg-(--color-accent)"
+            />
+            <span className="text-xs text-(--color-muted) tabular-nums shrink-0 w-8">
+              {options.pencilOpacity}%
+            </span>
+          </div>
         </>
       )}
 

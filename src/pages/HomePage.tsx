@@ -9,6 +9,7 @@ import { PALETTES, DEFAULT_PALETTE_ID } from '../data/palettes'
 
 const DEFAULT_TOOL_OPTIONS = {
   brushSize: 1,
+  pencilOpacity: 100,
   pixelPerfect: true,
   fillTolerance: 0,
 }
@@ -131,6 +132,10 @@ export function HomePage() {
             height={CANVAS_H}
             zoom={zoom}
             checkerboardSize={checkerboardSize}
+            activeTool={activeTool}
+            activeColor={activeColor}
+            brushSize={toolOptions.brushSize}
+            pencilOpacity={toolOptions.pencilOpacity}
             viewportRef={viewportRef}
           />
         </div>

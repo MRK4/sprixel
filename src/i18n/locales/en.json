@@ -8,6 +8,7 @@
   "editor": {
     "toolOptions": {
       "brushSize": "Size",
+      "opacity": "Opacity",
       "pixelPerfect": "Pixel perfect",
       "pixelPerfectHint": "Use Bresenham algorithm for clean pixel-perfect lines",
       "tolerance": "Tolerance"
