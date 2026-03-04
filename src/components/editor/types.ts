@@ -1,12 +1,15 @@
 export type Tool =
   | 'pencil'
   | 'eraser'
-  | 'fill'
-  | 'eyedropper'
-  | 'select'
-  | 'move'
   | 'line'
   | 'rect'
+  | 'ellipse'
+  | 'fill'
+  | 'select'
+  | 'marquee'
+  | 'move'
+  | 'eyedropper'
+  | 'hand'
 
 export interface Layer {
   id: string

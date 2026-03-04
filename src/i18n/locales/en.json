@@ -6,23 +6,48 @@
     "add": "Add"
   },
   "editor": {
+    "toolOptions": {
+      "brushSize": "Size",
+      "pixelPerfect": "Pixel perfect",
+      "pixelPerfectHint": "Use Bresenham algorithm for clean pixel-perfect lines",
+      "tolerance": "Tolerance"
+    },
     "tools": {
-      "pencil": "Pencil (P)",
-      "eraser": "Eraser (E)",
-      "fill": "Fill (F)",
-      "eyedropper": "Eyedropper (I)",
-      "select": "Select (S)",
-      "move": "Move (M)",
-      "line": "Line (L)",
-      "rect": "Rectangle (R)"
+      "pencil": "Pencil — precise pixel drawing, active color, 1px (P)",
+      "eraser": "Eraser — removes pixels, alpha or full (E)",
+      "shapes": "Shapes — line, rectangle, ellipse",
+      "line": "Line — Bresenham, pixel-perfect (L)",
+      "rect": "Rectangle — filled or outline, Shift for square (R)",
+      "ellipse": "Ellipse — circle/oval, Shift for circle (O)",
+      "fill": "Fill — flood fill, color tolerance (F)",
+      "select": "Select — rectangular selection (S)",
+      "marquee": "Marquee — freeform selection (M)",
+      "move": "Move — selection or layer (V)",
+      "eyedropper": "Eyedropper — pick color under cursor (I)",
+      "hand": "Hand — pan canvas (H)"
+    },
+    "view": {
+      "zoomToFit": "Fit to screen",
+      "checkerboardSmall": "Checkerboard: Small",
+      "checkerboardMedium": "Checkerboard: Medium",
+      "checkerboardLarge": "Checkerboard: Large"
+    },
+    "palette": {
+      "import": "Import palette",
+      "addColor": "Add color to palette"
     },
     "layers": {
       "title": "Layers",
       "add": "Add layer",
+      "addGroup": "Create layer group",
       "delete": "Delete layer",
       "opacity": "Opacity",
       "visible": "Visible",
-      "locked": "Locked"
+      "locked": "Locked",
+      "hideLayer": "Hide layer",
+      "showLayer": "Show layer",
+      "unlockLayer": "Unlock layer",
+      "lockLayer": "Lock layer"
     }
   }
 }

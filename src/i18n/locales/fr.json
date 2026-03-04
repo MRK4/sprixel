@@ -6,23 +6,48 @@
     "add": "Ajouter"
   },
   "editor": {
+    "toolOptions": {
+      "brushSize": "Taille",
+      "pixelPerfect": "Pixel perfect",
+      "pixelPerfectHint": "Algorithme de Bresenham pour des lignes nettes",
+      "tolerance": "Tolérance"
+    },
     "tools": {
-      "pencil": "Crayon (P)",
-      "eraser": "Gomme (E)",
-      "fill": "Remplissage (F)",
-      "eyedropper": "Pipette (I)",
-      "select": "Sélection (S)",
-      "move": "Déplacement (M)",
-      "line": "Ligne (L)",
-      "rect": "Rectangle (R)"
+      "pencil": "Crayon — dessin pixel précis, couleur active, 1px (P)",
+      "eraser": "Gomme — supprime pixels, alpha ou total (E)",
+      "shapes": "Formes — ligne, rectangle, ellipse",
+      "line": "Ligne — Bresenham, pixel-perfect (L)",
+      "rect": "Rectangle — plein ou contour, Maj pour carré (R)",
+      "ellipse": "Ellipse — cercle/ovale, Maj pour cercle (O)",
+      "fill": "Pot de peinture — remplissage, tolérance couleur (F)",
+      "select": "Sélection — zone rectangulaire (S)",
+      "marquee": "Marquee — sélection libre (M)",
+      "move": "Déplacement — sélection ou calque (V)",
+      "eyedropper": "Pipette — couleur sous curseur (I)",
+      "hand": "Main — déplacer le canvas (H)"
+    },
+    "view": {
+      "zoomToFit": "Ajuster à l'écran",
+      "checkerboardSmall": "Damier: Petit",
+      "checkerboardMedium": "Damier: Moyen",
+      "checkerboardLarge": "Damier: Grand"
+    },
+    "palette": {
+      "import": "Importer une palette",
+      "addColor": "Ajouter la couleur à la palette"
     },
     "layers": {
       "title": "Calques",
       "add": "Ajouter un calque",
+      "addGroup": "Créer un groupe de calques",
       "delete": "Supprimer le calque",
       "opacity": "Opacité",
       "visible": "Visible",
-      "locked": "Verrouillé"
+      "locked": "Verrouillé",
+      "hideLayer": "Masquer le calque",
+      "showLayer": "Afficher le calque",
+      "unlockLayer": "Déverrouiller le calque",
+      "lockLayer": "Verrouiller le calque"
     }
   }
 }

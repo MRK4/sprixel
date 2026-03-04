@@ -1,5 +1,8 @@
-import { Eye, EyeOff, Lock, Unlock, Plus, Delete } from 'pixelarticons/react'
-import { Slider, Button } from '../ui'
+import { useState, useRef, useEffect } from 'react'
+import { PixelIcon } from '../icons/PixelIcon'
+import { useTranslation } from 'react-i18next'
+import { Slider, IconButton, Tooltip } from '../ui'
+import { PaletteSection } from './PaletteSection'
 import type { Layer } from './types'
 
 interface LayersPanelProps {
@@ -7,8 +10,15 @@ interface LayersPanelProps {
   activeLayerId: string
   onSelectLayer: (id: string) => void
   onAddLayer: () => void
-  onDeleteLayer: () => void
+  onAddGroup?: () => void
+  onDeleteLayer: (layerId?: string) => void
   onUpdateLayer: (id: string, patch: Partial<Layer>) => void
+  activeColor: string
+  onColorChange: (color: string) => void
+  activePaletteId: string
+  onPaletteChange: (id: string) => void
+  onImportPalette?: () => void
+  onAddColor?: () => void
 }
 
 interface LayerItemProps {
@@ -16,11 +26,44 @@ interface LayerItemProps {
   isActive: boolean
   onSelect: () => void
   onUpdate: (patch: Partial<Layer>) => void
+  onDelete: () => void
+  canDelete: boolean
 }
 
 const ICON_SIZE = 14
 
-function LayerItem({ layer, isActive, onSelect, onUpdate }: LayerItemProps) {
+function LayerItem({ layer, isActive, onSelect, onUpdate, onDelete, canDelete }: LayerItemProps) {
+  const { t } = useTranslation()
+  const [isEditing, setIsEditing] = useState(false)
+  const [editValue, setEditValue] = useState(layer.name)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (isEditing) {
+      setEditValue(layer.name)
+      inputRef.current?.focus()
+      inputRef.current?.select()
+    }
+  }, [isEditing, layer.name])
+
+  const commitRename = () => {
+    const name = editValue.trim() || layer.name
+    if (name !== layer.name) onUpdate({ name })
+    setIsEditing(false)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      commitRename()
+    }
+    if (e.key === 'Escape') {
+      setEditValue(layer.name)
+      setIsEditing(false)
+      inputRef.current?.blur()
+    }
+  }
+
   return (
     <div
       onClick={onSelect}
@@ -33,17 +76,18 @@ function LayerItem({ layer, isActive, onSelect, onUpdate }: LayerItemProps) {
       ].join(' ')}
     >
       {/* Visibility */}
-      <button
-        type="button"
-        title={layer.visible ? 'Hide layer' : 'Show layer'}
-        onClick={(e) => { e.stopPropagation(); onUpdate({ visible: !layer.visible }) }}
-        className="w-6 h-6 flex items-center justify-center text-(--color-muted) hover:text-(--color-text) cursor-pointer shrink-0 transition-colors duration-75"
-      >
+      <Tooltip content={layer.visible ? t('editor.layers.hideLayer') : t('editor.layers.showLayer')} side="left">
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onUpdate({ visible: !layer.visible }) }}
+          className="w-6 h-6 flex items-center justify-center text-(--color-muted) hover:text-(--color-text) cursor-pointer shrink-0 transition-colors duration-75"
+        >
         {layer.visible
-          ? <Eye width={ICON_SIZE} height={ICON_SIZE} />
-          : <EyeOff width={ICON_SIZE} height={ICON_SIZE} />
+          ? <PixelIcon icon="eye" width={ICON_SIZE} height={ICON_SIZE} />
+          : <PixelIcon icon="eye-off" width={ICON_SIZE} height={ICON_SIZE} />
         }
-      </button>
+        </button>
+      </Tooltip>
 
       {/* Thumbnail placeholder */}
       <div
@@ -52,22 +96,51 @@ function LayerItem({ layer, isActive, onSelect, onUpdate }: LayerItemProps) {
       />
 
       {/* Name */}
-      <span className={['text-xs flex-1 truncate', layer.visible ? '' : 'opacity-40'].join(' ')}>
-        {layer.name}
-      </span>
+      {isEditing ? (
+        <input
+          ref={inputRef}
+          type="text"
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onBlur={commitRename}
+          onKeyDown={handleKeyDown}
+          onClick={(e) => e.stopPropagation()}
+          className="flex-1 min-w-0 text-[10px] px-0.5 py-0 bg-transparent border border-(--color-accent) rounded focus:outline-none"
+        />
+      ) : (
+        <span
+          className={['text-[10px] flex-1 truncate', layer.visible ? '' : 'opacity-40'].join(' ')}
+          onDoubleClick={(e) => { e.stopPropagation(); setIsEditing(true) }}
+        >
+          {layer.name}
+        </span>
+      )}
 
       {/* Lock */}
-      <button
-        type="button"
-        title={layer.locked ? 'Unlock layer' : 'Lock layer'}
-        onClick={(e) => { e.stopPropagation(); onUpdate({ locked: !layer.locked }) }}
-        className="w-6 h-6 flex items-center justify-center text-(--color-muted) hover:text-(--color-text) cursor-pointer shrink-0 transition-colors duration-75"
-      >
+      <Tooltip content={layer.locked ? t('editor.layers.unlockLayer') : t('editor.layers.lockLayer')} side="left">
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onUpdate({ locked: !layer.locked }) }}
+          className="w-6 h-6 flex items-center justify-center text-(--color-muted) hover:text-(--color-text) cursor-pointer shrink-0 transition-colors duration-75"
+        >
         {layer.locked
-          ? <Lock width={ICON_SIZE} height={ICON_SIZE} />
-          : <Unlock width={ICON_SIZE} height={ICON_SIZE} />
+          ? <PixelIcon icon="lock" width={ICON_SIZE} height={ICON_SIZE} />
+          : <PixelIcon icon="unlock" width={ICON_SIZE} height={ICON_SIZE} />
         }
-      </button>
+        </button>
+      </Tooltip>
+
+      {/* Delete */}
+      <Tooltip content={t('editor.layers.delete')} side="left">
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onDelete() }}
+          disabled={!canDelete}
+          className="w-6 h-6 flex items-center justify-center text-(--color-muted) hover:text-(--color-text) disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shrink-0 transition-colors duration-75"
+        >
+          <PixelIcon icon="trash" width={ICON_SIZE} height={ICON_SIZE} />
+        </button>
+      </Tooltip>
     </div>
   )
 }
@@ -77,9 +150,17 @@ export function LayersPanel({
   activeLayerId,
   onSelectLayer,
   onAddLayer,
+  onAddGroup,
   onDeleteLayer,
   onUpdateLayer,
+  activeColor,
+  onColorChange,
+  activePaletteId,
+  onPaletteChange,
+  onImportPalette,
+  onAddColor,
 }: LayersPanelProps) {
+  const { t } = useTranslation()
   const activeLayer = layers.find((l) => l.id === activeLayerId) ?? layers[0]
 
   return (
@@ -87,14 +168,15 @@ export function LayersPanel({
       {/* Header */}
       <div className="flex items-center justify-between px-2 h-8 border-b border-(--color-border) shrink-0">
         <span className="text-xs font-medium uppercase tracking-wider text-(--color-muted)">Layers</span>
-        <button
-          type="button"
-          title="Add layer"
-          onClick={onAddLayer}
-          className="w-6 h-6 flex items-center justify-center text-(--color-muted) hover:text-(--color-text) hover:bg-(--color-surface-alt) cursor-pointer transition-colors duration-75"
-        >
-          <Plus width={ICON_SIZE} height={ICON_SIZE} />
-        </button>
+        <Tooltip content={t('editor.layers.add')} side="left">
+          <button
+            type="button"
+            onClick={onAddLayer}
+            className="w-6 h-6 flex items-center justify-center text-(--color-muted) hover:text-(--color-text) hover:bg-(--color-surface-alt) cursor-pointer transition-colors duration-75"
+          >
+            <PixelIcon icon="plus" width={ICON_SIZE} height={ICON_SIZE} />
+          </button>
+        </Tooltip>
       </div>
 
       {/* Layer list */}
@@ -106,11 +188,13 @@ export function LayersPanel({
             isActive={layer.id === activeLayerId}
             onSelect={() => onSelectLayer(layer.id)}
             onUpdate={(patch) => onUpdateLayer(layer.id, patch)}
+            onDelete={() => onDeleteLayer(layer.id)}
+            canDelete={layers.length > 1}
           />
         ))}
       </div>
 
-      {/* Footer: opacity + delete */}
+      {/* Footer: opacity + action buttons */}
       <div className="flex flex-col gap-2 p-2 border-t border-(--color-border) shrink-0">
         <Slider
           label="Opacity"
@@ -120,17 +204,47 @@ export function LayersPanel({
           showValue
           onChange={(v) => onUpdateLayer(activeLayerId, { opacity: v })}
         />
-        <Button
-          variant="danger"
-          size="sm"
-          onClick={onDeleteLayer}
-          disabled={layers.length <= 1}
-          className="w-full"
-        >
-          <Delete width={ICON_SIZE} height={ICON_SIZE} />
-          Delete layer
-        </Button>
+        <div className="flex items-center justify-between gap-0.5">
+          <Tooltip content={t('editor.layers.addGroup')} side="top">
+            <IconButton
+              size="sm"
+              variant="ghost"
+              onClick={onAddGroup}
+            >
+              <PixelIcon icon="folder-plus" width={ICON_SIZE} height={ICON_SIZE} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip content={t('editor.layers.delete')} side="top">
+            <IconButton
+              size="sm"
+              variant="ghost"
+              onClick={() => onDeleteLayer()}
+              disabled={layers.length <= 1}
+            >
+              <PixelIcon icon="trash" width={ICON_SIZE} height={ICON_SIZE} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip content={t('editor.layers.add')} side="top">
+            <IconButton
+              size="sm"
+              variant="ghost"
+              onClick={onAddLayer}
+            >
+              <PixelIcon icon="plus" width={ICON_SIZE} height={ICON_SIZE} />
+            </IconButton>
+          </Tooltip>
+        </div>
       </div>
+
+      {/* Palette */}
+      <PaletteSection
+        activePaletteId={activePaletteId}
+        onPaletteChange={onPaletteChange}
+        onColorClick={onColorChange}
+        activeColor={activeColor}
+        onImportPalette={onImportPalette}
+        onAddColor={onAddColor}
+      />
     </aside>
   )
 }

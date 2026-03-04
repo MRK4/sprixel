@@ -1,19 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  PenSquare,
-  Delete,
-  ColorsSwatch,
-  Grid3x3,
-  Eye,
-  EyeOff,
-  Lock,
-  Undo,
-  Redo,
-  Download,
-  Plus,
-} from 'pixelarticons/react'
+import { EraserIcon } from '../components/icons/EraserIcon'
+import { PencilIcon } from '../components/icons/PencilIcon'
+import { PixelIcon } from '../components/icons/PixelIcon'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import {
   Button,
@@ -23,6 +13,17 @@ import {
   Separator,
   Slider,
   Input,
+  Tooltip,
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+  Dialog,
+  Badge,
+  Checkbox,
+  Switch,
+  Label,
+  toast,
 } from '../components/ui'
 
 const SAMPLE_COLORS = [
@@ -49,6 +50,9 @@ export function PlaygroundPage() {
   const [selectedColor, setSelectedColor] = useState('#ff0000')
   const [opacity, setOpacity] = useState(100)
   const [layerName, setLayerName] = useState('')
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [checkboxChecked, setCheckboxChecked] = useState(false)
+  const [switchChecked, setSwitchChecked] = useState(false)
   const [layers, setLayers] = useState([
     { id: '1', name: 'Layer 1', visible: true, locked: false },
     { id: '2', name: 'Layer 2', visible: true, locked: false },
@@ -63,10 +67,10 @@ export function PlaygroundPage() {
   }
 
   const tools = [
-    { id: 'pencil', icon: <PenSquare width={20} height={20} />, label: t('toolbar.pencil') },
-    { id: 'eraser', icon: <Delete width={20} height={20} />, label: t('toolbar.eraser') },
-    { id: 'fill',   icon: <ColorsSwatch width={20} height={20} />, label: 'Fill' },
-    { id: 'grid',   icon: <Grid3x3 width={20} height={20} />, label: 'Grid' },
+    { id: 'pencil', icon: <PencilIcon width={20} height={20} />, label: t('editor.tools.pencil') },
+    { id: 'eraser', icon: <EraserIcon width={20} height={20} />, label: t('editor.tools.eraser') },
+    { id: 'fill',   icon: <PixelIcon icon="colors-swatch" width={20} height={20} />, label: t('editor.tools.fill') },
+    { id: 'grid',   icon: <PixelIcon icon="grid-3x3" width={20} height={20} />, label: 'Grid' },
   ]
 
   return (
@@ -85,20 +89,24 @@ export function PlaygroundPage() {
         <Section title="Toolbar">
           <Panel direction="horizontal" className="w-fit">
             {tools.map((tool) => (
-              <Toggle
-                key={tool.id}
-                variant="tool"
-                size="icon_md"
-                pressed={selectedTool === tool.id}
-                onPressedChange={() => setSelectedTool(tool.id)}
-                title={tool.label}
-              >
-                {tool.icon}
-              </Toggle>
+              <Tooltip key={tool.id} content={tool.label}>
+                <Toggle
+                  variant="tool"
+                  size="icon_md"
+                  pressed={selectedTool === tool.id}
+                  onPressedChange={() => setSelectedTool(tool.id)}
+                >
+                  {tool.icon}
+                </Toggle>
+              </Tooltip>
             ))}
             <Separator orientation="vertical" />
-            <IconButton title="Undo"><Undo width={20} height={20} /></IconButton>
-            <IconButton title="Redo"><Redo width={20} height={20} /></IconButton>
+            <Tooltip content="Undo">
+              <IconButton><PixelIcon icon="undo" width={20} height={20} /></IconButton>
+            </Tooltip>
+            <Tooltip content="Redo">
+              <IconButton><PixelIcon icon="redo" width={20} height={20} /></IconButton>
+            </Tooltip>
           </Panel>
         </Section>
 
@@ -118,7 +126,7 @@ export function PlaygroundPage() {
           <div className="flex gap-3">
             <Button variant="secondary" size="md" disabled>Disabled</Button>
             <Button variant="primary" size="md">
-              <Download width={16} height={16} />
+              <PixelIcon icon="download" width={16} height={16} />
               Export PNG
             </Button>
           </div>
@@ -143,9 +151,15 @@ export function PlaygroundPage() {
         {/* IconButton */}
         <Section title="IconButton variants">
           <Panel direction="horizontal" className="w-fit">
-            <IconButton variant="default" title="Default"><Undo width={20} height={20} /></IconButton>
-            <IconButton variant="ghost" title="Ghost"><Redo width={20} height={20} /></IconButton>
-            <IconButton variant="active" title="Active"><Lock width={20} height={20} /></IconButton>
+            <Tooltip content="Default">
+              <IconButton variant="default"><PixelIcon icon="undo" width={20} height={20} /></IconButton>
+            </Tooltip>
+            <Tooltip content="Ghost">
+              <IconButton variant="ghost"><PixelIcon icon="redo" width={20} height={20} /></IconButton>
+            </Tooltip>
+            <Tooltip content="Active">
+              <IconButton variant="active"><PixelIcon icon="lock" width={20} height={20} /></IconButton>
+            </Tooltip>
           </Panel>
         </Section>
 
@@ -187,6 +201,118 @@ export function PlaygroundPage() {
           </div>
         </Section>
 
+        {/* Label */}
+        <Section title="Label">
+          <div className="flex flex-col gap-2 w-64">
+            <Label htmlFor="playground-label">Standard label</Label>
+            <Label htmlFor="playground-required" required>Required field</Label>
+          </div>
+        </Section>
+
+        {/* Badge */}
+        <Section title="Badge">
+          <div className="flex flex-wrap gap-2 items-center">
+            <Badge>Default</Badge>
+            <Badge variant="accent">Accent</Badge>
+            <Badge variant="danger">Danger</Badge>
+            <Badge variant="outline">Outline</Badge>
+            <Badge size="sm">Small</Badge>
+          </div>
+        </Section>
+
+        {/* Card */}
+        <Section title="Card">
+          <div className="flex gap-4 flex-wrap">
+            <Card className="w-64">
+              <CardHeader>Card title</CardHeader>
+              <CardContent>Card content goes here.</CardContent>
+              <CardFooter>Footer</CardFooter>
+            </Card>
+            <Card variant="outline" className="w-64">
+              <CardHeader>Outline variant</CardHeader>
+              <CardContent>Transparent background with border.</CardContent>
+            </Card>
+          </div>
+        </Section>
+
+        {/* Checkbox */}
+        <Section title="Checkbox">
+          <div className="flex flex-wrap gap-4 items-center">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Checkbox checked={checkboxChecked} onCheckedChange={setCheckboxChecked} />
+              <span className="text-sm">Checkbox</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Checkbox indeterminate />
+              <span className="text-sm">Indeterminate</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Checkbox disabled />
+              <span className="text-sm opacity-60">Disabled</span>
+            </label>
+          </div>
+        </Section>
+
+        {/* Switch */}
+        <Section title="Switch">
+          <div className="flex flex-wrap gap-4 items-center">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Switch checked={switchChecked} onCheckedChange={setSwitchChecked} />
+              <span className="text-sm">Toggle option</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Switch disabled />
+              <span className="text-sm opacity-60">Disabled</span>
+            </label>
+          </div>
+        </Section>
+
+        {/* Dialog */}
+        <Section title="Dialog">
+          <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+            <Dialog.Trigger className="inline-flex items-center justify-center gap-2 h-9 px-3.5 text-sm font-medium bg-(--color-accent) border-(--color-accent) text-white hover:bg-(--color-accent-hover) cursor-pointer border transition-colors duration-75">
+              Open dialog
+            </Dialog.Trigger>
+            <Dialog.Content>
+              <Dialog.Header>
+                <Dialog.Title>Dialog title</Dialog.Title>
+                <Dialog.Close />
+              </Dialog.Header>
+              <Dialog.Body>
+                <p className="text-sm text-(--color-muted) m-0">
+                  This is a sample dialog. Close it with the X button or by clicking outside.
+                </p>
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Button variant="ghost" size="sm" onClick={() => setDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button variant="primary" size="sm" onClick={() => setDialogOpen(false)}>
+                  Confirm
+                </Button>
+              </Dialog.Footer>
+            </Dialog.Content>
+          </Dialog.Root>
+        </Section>
+
+        {/* Toast (Sonner) */}
+        <Section title="Toast (Sonner)">
+          <div className="flex flex-wrap gap-2">
+            <Button variant="secondary" size="sm" onClick={() => toast('Default toast')}>
+              Default toast
+            </Button>
+            <Button variant="secondary" size="sm" onClick={() => toast.success('Success!')}>
+              Success
+            </Button>
+            <Button variant="secondary" size="sm" onClick={() => toast.error('Error message')}>
+              Error
+            </Button>
+            <Button variant="secondary" size="sm" onClick={() => toast.info('Info message')}>
+              Info
+            </Button>
+          </div>
+        </Section>
+
         {/* Input */}
         <Section title="Input">
           <div className="w-64 flex flex-col gap-4">
@@ -207,15 +333,15 @@ export function PlaygroundPage() {
             <Separator />
             <div className="flex flex-wrap gap-2 p-1">
               {SAMPLE_COLORS.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => setSelectedColor(color)}
-                  title={color}
-                  className={`w-7 h-7 rounded-sm border-2 transition-transform hover:scale-110 ${
-                    selectedColor === color ? 'border-white shadow-sm' : 'border-transparent'
-                  }`}
-                  style={{ backgroundColor: color }}
-                />
+                <Tooltip key={color} content={color}>
+                  <button
+                    onClick={() => setSelectedColor(color)}
+                    className={`w-7 h-7 border-2 transition-transform hover:scale-110 cursor-pointer ${
+                      selectedColor === color ? 'border-white shadow-sm' : 'border-transparent'
+                    }`}
+                    style={{ backgroundColor: color }}
+                  />
+                </Tooltip>
               ))}
             </div>
           </Panel>
@@ -225,33 +351,37 @@ export function PlaygroundPage() {
         <Section title="Layers panel (demo)">
           <Panel direction="vertical" className="w-60">
             {layers.map((layer) => (
-              <div key={layer.id} className="flex items-center gap-1 px-1 py-0.5 rounded-sm hover:bg-(--color-surface-alt)">
-                <IconButton
-                  size="sm"
-                  variant={layer.visible ? 'default' : 'ghost'}
-                  onClick={() => toggleLayerVisibility(layer.id)}
-                  title={layer.visible ? 'Hide' : 'Show'}
-                >
-                  {layer.visible ? <Eye width={16} height={16} /> : <EyeOff width={16} height={16} />}
-                </IconButton>
+              <div key={layer.id} className="flex items-center gap-1 px-1 py-0.5 hover:bg-(--color-surface-alt)">
+                <Tooltip content={layer.visible ? 'Hide' : 'Show'}>
+                  <IconButton
+                    size="sm"
+                    variant={layer.visible ? 'default' : 'ghost'}
+                    onClick={() => toggleLayerVisibility(layer.id)}
+                  >
+                    {layer.visible ? <PixelIcon icon="eye" width={16} height={16} /> : <PixelIcon icon="eye-off" width={16} height={16} />}
+                  </IconButton>
+                </Tooltip>
                 <span className="flex-1 text-sm truncate">{layer.name}</span>
-                <IconButton
-                  size="sm"
-                  variant={layer.locked ? 'active' : 'ghost'}
-                  onClick={() => toggleLayerLock(layer.id)}
-                  title={layer.locked ? 'Unlock' : 'Lock'}
-                >
-                  <Lock width={16} height={16} />
-                </IconButton>
-                <IconButton size="sm" variant="ghost" title="Delete">
-                  <Delete width={16} height={16} />
-                </IconButton>
+                <Tooltip content={layer.locked ? 'Unlock' : 'Lock'}>
+                  <IconButton
+                    size="sm"
+                    variant={layer.locked ? 'active' : 'ghost'}
+                    onClick={() => toggleLayerLock(layer.id)}
+                  >
+                    <PixelIcon icon="lock" width={16} height={16} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip content={t('common.delete')}>
+                  <IconButton size="sm" variant="ghost">
+                    <PixelIcon icon="delete" width={16} height={16} />
+                  </IconButton>
+                </Tooltip>
               </div>
             ))}
             <Separator />
             <Button variant="ghost" size="sm" className="w-full justify-center">
-              <Plus width={16} height={16} />
-              {t('layers.newLayer')}
+              <PixelIcon icon="plus" width={16} height={16} />
+              {t('editor.layers.add')}
             </Button>
           </Panel>
         </Section>
@@ -259,7 +389,7 @@ export function PlaygroundPage() {
         {/* Canvas placeholder */}
         <Section title="Canvas area (placeholder)">
           <div className="flex flex-col items-center justify-center gap-4 min-h-48 border-2 border-dashed border-(--color-border) rounded-lg bg-(--color-surface)">
-            <Grid3x3 width={48} height={48} className="opacity-20" />
+            <PixelIcon icon="grid-3x3" width={48} height={48} className="opacity-20" />
             <span className="text-sm text-(--color-muted)">Canvas will render here</span>
           </div>
         </Section>

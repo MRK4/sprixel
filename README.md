@@ -154,7 +154,7 @@ The project favors simplicity, performance and precision over multiplying second
 ## Credits
 
 - DGC-01 — pixel display font
-- [pixelarticons](https://github.com/halfmage/pixelarticons) — 800 handcrafted pixel art icons (24×24, no anti-aliasing)
+- [pixelarticons](https://icon-sets.iconify.design/pixelarticons/) via [Iconify](https://iconify.design/) — 800 handcrafted pixel art icons (24×24, no anti-aliasing)
 
 ---
 

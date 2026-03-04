@@ -4,10 +4,18 @@ interface CanvasAreaProps {
   width: number
   height: number
   zoom: number
-  showGrid: boolean
+  checkerboardSize: 8 | 16 | 32
+  /** Ref attached to the canvas viewport container for zoom-to-fit measurement */
+  viewportRef?: React.RefObject<HTMLDivElement | null>
 }
 
-export function CanvasArea({ width, height, zoom, showGrid }: CanvasAreaProps) {
+const CHECKERBOARD_STYLES: Record<8 | 16 | 32, { size: string; position: string }> = {
+  8: { size: '8px 8px', position: '0 0, 0 4px, 4px -4px, -4px 0px' },
+  16: { size: '16px 16px', position: '0 0, 0 8px, 8px -8px, -8px 0px' },
+  32: { size: '32px 32px', position: '0 0, 0 16px, 16px -16px, -16px 0px' },
+}
+
+export function CanvasArea({ width, height, zoom, checkerboardSize, viewportRef }: CanvasAreaProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [cursor, setCursor] = useState({ x: 0, y: 0, inside: false })
 
@@ -37,7 +45,7 @@ export function CanvasArea({ width, height, zoom, showGrid }: CanvasAreaProps) {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Viewport */}
-      <div className="flex-1 flex items-center justify-center overflow-auto bg-(--color-bg) p-8">
+      <div ref={viewportRef} className="flex-1 flex items-center justify-center overflow-auto bg-(--color-bg) p-8">
         <div className="relative shrink-0" style={{ width: displayW, height: displayH }}>
           {/* Transparency checkerboard */}
           <div
@@ -49,8 +57,8 @@ export function CanvasArea({ width, height, zoom, showGrid }: CanvasAreaProps) {
                 'linear-gradient(45deg, transparent 75%, #444 75%)',
                 'linear-gradient(-45deg, transparent 75%, #444 75%)',
               ].join(', '),
-              backgroundSize: '16px 16px',
-              backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px',
+              backgroundSize: CHECKERBOARD_STYLES[checkerboardSize].size,
+              backgroundPosition: CHECKERBOARD_STYLES[checkerboardSize].position,
               backgroundColor: '#666',
             }}
           />
@@ -72,26 +80,11 @@ export function CanvasArea({ width, height, zoom, showGrid }: CanvasAreaProps) {
             onMouseLeave={() => setCursor((c) => ({ ...c, inside: false }))}
           />
 
-          {/* Pixel grid overlay */}
-          {showGrid && zoom >= 4 && (
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                zIndex: 2,
-                backgroundImage: [
-                  'linear-gradient(to right, rgba(0,0,0,0.2) 1px, transparent 1px)',
-                  'linear-gradient(to bottom, rgba(0,0,0,0.2) 1px, transparent 1px)',
-                ].join(', '),
-                backgroundSize: `${zoom}px ${zoom}px`,
-              }}
-            />
-          )}
         </div>
       </div>
 
       {/* Status bar */}
       <div className="flex items-center gap-4 px-3 h-6 border-t border-(--color-border) bg-(--color-surface) text-xs text-(--color-muted) shrink-0 tabular-nums">
-        <span className="font-medium text-(--color-text)">×{zoom}</span>
         <span>{width}×{height} px</span>
         {cursor.inside && (
           <span>{cursor.x}, {cursor.y}</span>
