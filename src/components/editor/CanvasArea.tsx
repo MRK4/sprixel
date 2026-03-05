@@ -13,6 +13,8 @@ interface CanvasAreaProps {
   fillTolerance: number
   /** Ref attached to the canvas viewport container for zoom-to-fit measurement */
   viewportRef?: React.RefObject<HTMLDivElement | null>
+  /** Increment to trigger center view (e.g. on zoom-to-fit) */
+  centerViewTrigger?: number
 }
 
 type Selection =
@@ -94,7 +96,7 @@ const CHECKERBOARD_STYLES: Record<8 | 16 | 32, { size: string; position: string 
   32: { size: '32px 32px', position: '0 0, 0 16px, 16px -16px, -16px 0px' },
 }
 
-export function CanvasArea({ width, height, zoom, checkerboardSize, activeTool, activeColor, brushSize, pencilOpacity, fillTolerance, viewportRef }: CanvasAreaProps) {
+export function CanvasArea({ width, height, zoom, checkerboardSize, activeTool, activeColor, brushSize, pencilOpacity, fillTolerance, viewportRef, centerViewTrigger }: CanvasAreaProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const isDrawing = useRef(false)
   const lastPixel = useRef<{ x: number; y: number } | null>(null)
@@ -132,6 +134,13 @@ export function CanvasArea({ width, height, zoom, checkerboardSize, activeTool, 
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [])
+
+  // Center view when zoom-to-fit is triggered
+  useEffect(() => {
+    if (centerViewTrigger != null && centerViewTrigger > 0) {
+      setPanOffset({ x: 0, y: 0 })
+    }
+  }, [centerViewTrigger])
 
   // Dessiner la prévisualisation sur l'overlay quand moveOffset change
   useEffect(() => {

@@ -39,6 +39,7 @@ export function HomePage() {
   const [activePaletteId, setActivePaletteId] = useState(DEFAULT_PALETTE_ID)
 
   const viewportRef = useRef<HTMLDivElement>(null)
+  const [centerViewTrigger, setCenterViewTrigger] = useState(0)
   const zoomIn = useCallback(() => setZoom((z) => Math.min(z + 2, 32)), [])
   const zoomOut = useCallback(() => setZoom((z) => Math.max(z - 2, 1)), [])
   const zoomToFit = useCallback(() => {
@@ -50,6 +51,7 @@ export function HomePage() {
     const fitZoom = Math.min(availW / CANVAS_W, availH / CANVAS_H)
     const z = Math.max(1, Math.min(32, Math.floor(fitZoom)))
     setZoom(z)
+    setCenterViewTrigger((t) => t + 1)
   }, [])
 
   const addGroup = useCallback(() => {
@@ -138,6 +140,7 @@ export function HomePage() {
             pencilOpacity={toolOptions.pencilOpacity}
             fillTolerance={toolOptions.fillTolerance}
             viewportRef={viewportRef}
+            centerViewTrigger={centerViewTrigger}
           />
         </div>
 
