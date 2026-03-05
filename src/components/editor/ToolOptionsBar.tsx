@@ -90,7 +90,7 @@ export function ToolOptionsBar({ activeTool, options, onOptionsChange }: ToolOpt
 
   const toolsWithBrushSize: Tool[] = ['pencil', 'eraser']
   const toolsWithPencilOpacity: Tool[] = ['pencil']
-  const toolsWithPixelPerfect: Tool[] = ['line', 'rect', 'ellipse']
+  const toolsWithPixelPerfect: Tool[] = ['pencil', 'line', 'rect', 'ellipse']
   const toolsWithFillTolerance: Tool[] = ['fill']
 
   const showBrushSize = toolsWithBrushSize.includes(activeTool)

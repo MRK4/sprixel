@@ -15,6 +15,11 @@ interface CanvasAreaProps {
   viewportRef?: React.RefObject<HTMLDivElement | null>
   /** Increment to trigger center view (e.g. on zoom-to-fit) */
   centerViewTrigger?: number
+  onZoomIn?: () => void
+  onZoomOut?: () => void
+  /** Called when zoom changes via wheel (allows zoom-to-cursor). Pass new zoom level. */
+  onZoomChange?: (newZoom: number) => void
+  pixelPerfect?: boolean
 }
 
 type Selection =
@@ -96,10 +101,22 @@ const CHECKERBOARD_STYLES: Record<8 | 16 | 32, { size: string; position: string 
   32: { size: '32px 32px', position: '0 0, 0 16px, 16px -16px, -16px 0px' },
 }
 
-export function CanvasArea({ width, height, zoom, checkerboardSize, activeTool, activeColor, brushSize, pencilOpacity, fillTolerance, viewportRef, centerViewTrigger }: CanvasAreaProps) {
+function formsLShape(
+  p0: { x: number; y: number },
+  p1: { x: number; y: number },
+  p2: { x: number; y: number }
+): boolean {
+  const p0p1Aligned = p0.x === p1.x || p0.y === p1.y
+  const p1p2Aligned = p1.x === p2.x || p1.y === p2.y
+  const p0p2Diagonal = p0.x !== p2.x && p0.y !== p2.y
+  return p0p1Aligned && p1p2Aligned && p0p2Diagonal
+}
+
+export function CanvasArea({ width, height, zoom, checkerboardSize, activeTool, activeColor, brushSize, pencilOpacity, fillTolerance, viewportRef, centerViewTrigger, onZoomIn, onZoomOut, onZoomChange, pixelPerfect }: CanvasAreaProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const isDrawing = useRef(false)
   const lastPixel = useRef<{ x: number; y: number } | null>(null)
+  const lastLastPixel = useRef<{ x: number; y: number } | null>(null)
   const [cursor, setCursor] = useState({ x: 0, y: 0, inside: false })
 
   // Selection state
@@ -141,6 +158,39 @@ export function CanvasArea({ width, height, zoom, checkerboardSize, activeTool, 
       setPanOffset({ x: 0, y: 0 })
     }
   }, [centerViewTrigger])
+
+  // Zoom with mouse wheel, zoom toward cursor position (passive: false for preventDefault)
+  useEffect(() => {
+    const el = viewportRef?.current
+    const canvas = canvasRef.current
+    if (!el || !canvas) return
+    const handler = (e: WheelEvent) => {
+      e.preventDefault()
+      const delta = e.deltaY > 0 ? -2 : 2
+      const newZoom = Math.max(1, Math.min(32, zoom + delta))
+      if (newZoom === zoom) return
+
+      if (onZoomChange) {
+        // Zoom toward cursor: keep the point under cursor fixed
+        const rect = canvas.getBoundingClientRect()
+        const px = (e.clientX - rect.left) / zoom
+        const py = (e.clientY - rect.top) / zoom
+        const panDeltaX = (newZoom - zoom) * (width / 2 - px)
+        const panDeltaY = (newZoom - zoom) * (height / 2 - py)
+        setPanOffset((prev) => ({
+          x: prev.x + panDeltaX,
+          y: prev.y + panDeltaY,
+        }))
+        onZoomChange(newZoom)
+      } else if (e.deltaY < 0 && onZoomIn) {
+        onZoomIn()
+      } else if (e.deltaY > 0 && onZoomOut) {
+        onZoomOut()
+      }
+    }
+    el.addEventListener('wheel', handler, { passive: false })
+    return () => el.removeEventListener('wheel', handler)
+  }, [viewportRef, zoom, width, height, onZoomIn, onZoomOut, onZoomChange])
 
   // Dessiner la prévisualisation sur l'overlay quand moveOffset change
   useEffect(() => {
@@ -601,6 +651,7 @@ export function CanvasArea({ width, height, zoom, checkerboardSize, activeTool, 
     if (activeTool !== 'pencil' && activeTool !== 'eraser') return
     isDrawing.current = true
     lastPixel.current = coords
+    lastLastPixel.current = null
     if (activeTool === 'pencil') drawLine(coords.x, coords.y, coords.x, coords.y)
     else eraseLine(coords.x, coords.y, coords.x, coords.y)
   }
@@ -636,8 +687,18 @@ export function CanvasArea({ width, height, zoom, checkerboardSize, activeTool, 
 
     if (isDrawing.current && (activeTool === 'pencil' || activeTool === 'eraser')) {
       const prev = lastPixel.current ?? coords
-      if (activeTool === 'pencil') drawLine(prev.x, prev.y, coords.x, coords.y)
-      else eraseLine(prev.x, prev.y, coords.x, coords.y)
+      if (activeTool === 'pencil') {
+        const prevPrev = lastLastPixel.current
+        if (pixelPerfect && prevPrev && formsLShape(prevPrev, prev, coords)) {
+          drawLine(prevPrev.x, prevPrev.y, coords.x, coords.y)
+          lastLastPixel.current = prevPrev
+        } else {
+          drawLine(prev.x, prev.y, coords.x, coords.y)
+          lastLastPixel.current = prev
+        }
+      } else {
+        eraseLine(prev.x, prev.y, coords.x, coords.y)
+      }
       lastPixel.current = coords
     }
   }
@@ -655,6 +716,7 @@ export function CanvasArea({ width, height, zoom, checkerboardSize, activeTool, 
     }
     isDrawing.current = false
     lastPixel.current = null
+    lastLastPixel.current = null
     isSelecting.current = false
     selectionStart.current = null
   }
@@ -731,6 +793,7 @@ export function CanvasArea({ width, height, zoom, checkerboardSize, activeTool, 
             onMouseLeave={() => {
               isDrawing.current = false
               lastPixel.current = null
+              lastLastPixel.current = null
               isSelecting.current = false
               selectionStart.current = null
               isLassoDrawing.current = false

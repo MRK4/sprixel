@@ -42,6 +42,7 @@ export function HomePage() {
   const [centerViewTrigger, setCenterViewTrigger] = useState(0)
   const zoomIn = useCallback(() => setZoom((z) => Math.min(z + 2, 32)), [])
   const zoomOut = useCallback(() => setZoom((z) => Math.max(z - 2, 1)), [])
+  const onZoomChange = useCallback((newZoom: number) => setZoom(newZoom), [])
   const zoomToFit = useCallback(() => {
     const el = viewportRef.current
     if (!el) return
@@ -139,8 +140,12 @@ export function HomePage() {
             brushSize={toolOptions.brushSize}
             pencilOpacity={toolOptions.pencilOpacity}
             fillTolerance={toolOptions.fillTolerance}
+            pixelPerfect={toolOptions.pixelPerfect}
             viewportRef={viewportRef}
             centerViewTrigger={centerViewTrigger}
+            onZoomIn={zoomIn}
+            onZoomOut={zoomOut}
+            onZoomChange={onZoomChange}
           />
         </div>
 
