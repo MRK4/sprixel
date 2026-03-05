@@ -1,7 +1,20 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PixelIcon } from '../icons/PixelIcon'
 import { DropdownMenu } from '../ui'
+
+const THEME_KEY = 'sprixel-theme'
+
+function getTheme(): 'light' | 'dark' {
+  const stored = localStorage.getItem(THEME_KEY)
+  if (stored === 'light' || stored === 'dark') return stored
+  return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'
+}
+
+function setTheme(theme: 'light' | 'dark') {
+  document.documentElement.setAttribute('data-theme', theme)
+  localStorage.setItem(THEME_KEY, theme)
+}
 
 interface MenuAction {
   label: string
@@ -46,6 +59,17 @@ export function MenuBar({ checkerboardSize, onZoomIn, onZoomOut, onCycleCheckerb
   const { t, i18n } = useTranslation()
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const [langOpen, setLangOpen] = useState(false)
+  const [theme, setThemeState] = useState<'light' | 'dark'>(() => getTheme())
+
+  useEffect(() => {
+    setThemeState(getTheme())
+  }, [])
+
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark'
+    setTheme(next)
+    setThemeState(next)
+  }
 
   const menus: MenuDef[] = [
     {
@@ -152,9 +176,22 @@ export function MenuBar({ checkerboardSize, onZoomIn, onZoomOut, onCycleCheckerb
         ))}
       </nav>
 
-      {/* Right side: version + lang */}
+      {/* Right side: version + theme + lang */}
       <div className="ml-auto flex items-center gap-3 px-3 h-full border-l border-(--color-border)">
         <span className="text-[10px] text-(--color-muted)">v{__APP_VERSION__}</span>
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="text-[10px] h-5 px-1.5 bg-(--color-surface-alt) border border-(--color-border) text-(--color-muted) cursor-pointer hover:text-(--color-text) transition-colors duration-75 flex items-center justify-center"
+          title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+          aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
+        >
+          {theme === 'dark' ? (
+            <PixelIcon icon="sun" width={12} height={12} />
+          ) : (
+            <PixelIcon icon="moon" width={12} height={12} />
+          )}
+        </button>
         <DropdownMenu.Root open={langOpen} onOpenChange={setLangOpen}>
           <DropdownMenu.Trigger
             className="text-[10px] h-5 px-1.5 bg-(--color-surface-alt) border border-(--color-border) text-(--color-muted) cursor-pointer hover:text-(--color-text) transition-colors duration-75"

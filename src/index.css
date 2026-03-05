@@ -80,8 +80,9 @@ button, input {
   font-family: inherit;
 }
 
+/* Light theme: system preference when no user choice */
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme]) {
     --color-bg:          #f4f4f7;
     --color-surface:     #ffffff;
     --color-surface-alt: #e8e8f0;
@@ -92,7 +93,36 @@ button, input {
     color: var(--color-text);
     background-color: var(--color-bg);
   }
-  a:hover {
+  :root:not([data-theme]) a:hover {
     color: #747bff;
   }
+}
+
+/* Light theme: explicit user choice */
+[data-theme="light"] {
+  --color-bg:          #f4f4f7;
+  --color-surface:     #ffffff;
+  --color-surface-alt: #e8e8f0;
+  --color-border:      rgba(0, 0, 0, 0.1);
+  --color-text:        #213547;
+  --color-muted:       rgba(0, 0, 0, 0.45);
+
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+[data-theme="light"] a:hover {
+  color: #747bff;
+}
+
+/* Dark theme: explicit user choice */
+[data-theme="dark"] {
+  --color-bg:          #1e1e2e;
+  --color-surface:     #2a2a3e;
+  --color-surface-alt: #32324a;
+  --color-border:      rgba(255, 255, 255, 0.12);
+  --color-text:        rgba(255, 255, 255, 0.87);
+  --color-muted:       rgba(255, 255, 255, 0.45);
+
+  color: var(--color-text);
+  background-color: var(--color-bg);
 }

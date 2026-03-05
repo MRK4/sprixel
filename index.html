@@ -13,6 +13,14 @@
     <meta name="google" content="notranslate">
   </head>
   <body>
+    <script>
+      (function() {
+        var theme = localStorage.getItem('sprixel-theme');
+        if (theme === 'light' || theme === 'dark') {
+          document.documentElement.setAttribute('data-theme', theme);
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
